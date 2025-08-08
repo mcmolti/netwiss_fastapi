@@ -1,0 +1,21 @@
+[project]
+name = "netwiss-backend"
+authors = [
+    { name = "Malte Scheuvens", email = "malte.scheuvens@klartext-ai.com" }
+]
+maintainers = [
+    { name = "Malte Scheuvens", email = "malte.scheuvens@klartext-ai.com" }
+]
+version = "0.1.0"
+description = "FastAPI backend for netwiss AI proposal generation"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi[standard]>=0.116.1",
+    "pydantic>=2.0.0",
+    "langchain>=0.3.0",
+    "langchain-openai>=0.2.0",
+    "langchain-anthropic>=0.2.0",
+    "python-dotenv>=1.0.0",
+    "requests>=2.32.0",
+]

@@ -1,0 +1,13 @@
+"""
+FastAPI backend for proposal section generation.
+
+This module serves as the entry point for the application.
+For the actual app configuration, see app/main.py
+"""
+
+from app.main import app
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
