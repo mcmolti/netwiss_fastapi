@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Textarea } from '@/components/ui/textarea'
 import { FileAttachment } from '@/components/FileAttachment'
-import { fetchAvailableTemplates, fetchProposalTemplate, fetchAvailableModels, generateProposalSections, type TemplateListItem, type ProposalTemplate, type AIModel } from '@/lib/api'
+import { fetchAvailableTemplates, fetchProposalTemplate, fetchAvailableModels, generateProposalSections, type TemplateListItem, type ProposalTemplate, type AIModel, type GenerationPayload } from '@/lib/api'
 
 interface AttachmentData {
   id: string
@@ -98,7 +98,7 @@ export default function ProposalGenerator() {
   const loadProposalData = async (templateId: string) => {
     setIsLoading(true)
     try {
-      const template = await fetchProposalTemplate(templateId)
+      const template: ProposalTemplate = await fetchProposalTemplate(templateId)
       setProposalData(template)
       
       // Initialize user inputs and attachments
@@ -137,7 +137,7 @@ export default function ProposalGenerator() {
     setIsGenerating(true)
     try {
       // Prepare the payload for the FastAPI backend
-      const payload = {
+      const payload: GenerationPayload = {
         model: selectedModel,
         sections: Object.entries(proposalData.sections).reduce((acc, [key, section]) => {
           const sectionAttachments = attachments[key] || []
@@ -155,7 +155,7 @@ export default function ProposalGenerator() {
               .map(att => att.originalUrl || att.name) // Use originalUrl or fallback to name
           }
           return acc
-        }, {} as Record<string, any>)
+        }, {} as GenerationPayload['sections'])
       }
 
       // Debug log the payload

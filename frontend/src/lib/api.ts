@@ -53,6 +53,30 @@ export interface URLContentResponse {
   status: string
 }
 
+export interface GenerationPayload {
+  model: string
+  sections: Record<string, {
+    title: string
+    questions: string
+    best_practice_beispiele: string[]
+    user_input: string
+    max_section_length: number
+    attached_files?: string[]
+    attached_urls?: string[]
+    attachment_summaries?: string[]
+  }>
+}
+
+export interface GenerationResponse {
+  sections: Record<string, {
+    title: string
+    generated_content: string
+    user_input: string
+    status: string
+  }>
+  status: string
+}
+
 /**
  * Fetch available proposal templates.
  */
@@ -146,7 +170,7 @@ export async function deleteFile(fileId: string): Promise<void> {
 /**
  * Generate proposal sections.
  */
-export async function generateProposalSections(payload: any): Promise<any> {
+export async function generateProposalSections(payload: GenerationPayload): Promise<GenerationResponse> {
   const response = await fetch(`${API_BASE_URL}/generate-sections`, {
     method: 'POST',
     headers: {
