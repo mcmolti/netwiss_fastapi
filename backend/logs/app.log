@@ -52,3 +52,24 @@
 2025-08-14 14:43:13 - app.services.proposal_service - WARNING - _process_section:106 - No user input provided for section zielsetzung_1, skipping generation
 2025-08-14 14:43:13 - app.services.proposal_service - WARNING - _process_section:106 - No user input provided for section zielsetzung_2, skipping generation
 2025-08-14 14:43:13 - app.services.proposal_service - INFO - process_request:84 - Completed processing proposal request with status: success
+2025-08-14 14:44:54 - app.main - INFO - lifespan:41 - Shutting down proposal generation backend...
+2025-08-14 14:44:55 - app - INFO - setup_logging:93 - Logging system initialized
+2025-08-14 14:44:55 - app.main - INFO - lifespan:32 - Starting proposal generation backend...
+2025-08-14 14:45:43 - app.services.proposal_service - INFO - process_request:59 - Processing proposal request with 4 sections using model: gpt-4o-mini
+2025-08-14 14:45:43 - app.services.llm_service - INFO - __init__:59 - Initialized LLM service with model: gpt-4o-mini, provider: openai
+2025-08-14 14:45:43 - app.services.proposal_service - INFO - _process_section:127 - Processing attachments for section kurzvorstellung
+2025-08-14 14:45:44 - app.services.summarization_service - INFO - summarize_for_questions:88 - Content truncated to 8000 characters
+2025-08-14 14:45:48 - app.services.summarization_service - INFO - summarize_for_questions:97 - Generated summary of 879 characters for pdf content
+2025-08-14 14:45:48 - app.services.web_scraping_service - INFO - extract_content_from_url:74 - Successfully extracted content from URL: https://www.microsoft.com/en-us/about
+2025-08-14 14:45:48 - app.services.summarization_service - INFO - summarize_for_questions:88 - Content truncated to 8000 characters
+2025-08-14 14:45:52 - app.services.summarization_service - INFO - summarize_for_questions:97 - Generated summary of 768 characters for web content
+2025-08-14 14:45:52 - app.services.proposal_service - INFO - _process_attachments:230 - Returning 2 summaries
+2025-08-14 14:45:52 - app.services.proposal_service - INFO - _process_section:129 - Generated 2 summaries for section kurzvorstellung
+2025-08-14 14:45:52 - app.services.llm_service - INFO - generate_section_content_with_attachments:184 - Generating content with attachments for section: Kurzvorstellung des Unternehmens
+2025-08-14 14:45:52 - app.services.llm_service - INFO - llm:84 - OpenAI client initialized successfully for model: gpt-4o-mini
+2025-08-14 14:45:54 - app.services.llm_service - INFO - generate_section_content_with_attachments:205 - Successfully generated content with attachments for section: Kurzvorstellung des Unternehmens, Length: 840 characters
+2025-08-14 14:45:54 - app.services.proposal_service - INFO - _process_section:158 - Successfully generated content for section kurzvorstellung, length: 840 characters
+2025-08-14 14:45:54 - app.services.proposal_service - WARNING - _process_section:112 - No user input provided for section herausforderungen, skipping generation
+2025-08-14 14:45:54 - app.services.proposal_service - WARNING - _process_section:112 - No user input provided for section zielsetzung_1, skipping generation
+2025-08-14 14:45:54 - app.services.proposal_service - WARNING - _process_section:112 - No user input provided for section zielsetzung_2, skipping generation
+2025-08-14 14:45:54 - app.services.proposal_service - INFO - process_request:86 - Completed processing proposal request with status: success

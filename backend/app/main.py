@@ -27,7 +27,7 @@ async def lifespan(app: FastAPI):
     Handles startup and shutdown events for the FastAPI application.
     """
     logger = get_logger("main")
-    
+
     # Startup
     logger.info("Starting proposal generation backend...")
 

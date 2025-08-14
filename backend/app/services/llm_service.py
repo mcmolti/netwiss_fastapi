@@ -44,7 +44,7 @@ class LLMService:
             temperature: Temperature setting for response generation
         """
         self.logger = get_logger("services.llm_service")
-        
+
         if model_name not in self.SUPPORTED_MODELS:
             error_msg = f"Unsupported model: {model_name}. Supported models: {list(self.SUPPORTED_MODELS.keys())}"
             self.logger.error(error_msg)
@@ -55,8 +55,10 @@ class LLMService:
         self.temperature = temperature
         self.provider = self.SUPPORTED_MODELS[model_name]
         self._llm = None
-        
-        self.logger.info(f"Initialized LLM service with model: {model_name}, provider: {self.provider}")
+
+        self.logger.info(
+            f"Initialized LLM service with model: {model_name}, provider: {self.provider}"
+        )
 
     @property
     def llm(self):
@@ -68,7 +70,7 @@ class LLMService:
         """
         if self._llm is None:
             self.logger.debug(f"Initializing LLM client for provider: {self.provider}")
-            
+
             if self.provider == "openai":
                 api_key = os.getenv("OPENAI_API_KEY")
                 if not api_key:
@@ -79,8 +81,10 @@ class LLMService:
                 self._llm = ChatOpenAI(
                     model=self.model_name, temperature=self.temperature, api_key=api_key
                 )
-                self.logger.info(f"OpenAI client initialized successfully for model: {self.model_name}")
-                
+                self.logger.info(
+                    f"OpenAI client initialized successfully for model: {self.model_name}"
+                )
+
             elif self.provider == "anthropic":
                 try:
                     from langchain_anthropic import ChatAnthropic
@@ -98,7 +102,9 @@ class LLMService:
                 self._llm = ChatAnthropic(
                     model=self.model_name, temperature=self.temperature, api_key=api_key
                 )
-                self.logger.info(f"Anthropic client initialized successfully for model: {self.model_name}")
+                self.logger.info(
+                    f"Anthropic client initialized successfully for model: {self.model_name}"
+                )
             else:
                 error_msg = f"Unsupported provider: {self.provider}"
                 self.logger.error(error_msg)
@@ -128,11 +134,13 @@ class LLMService:
             Generated section content
         """
         self.logger.info(f"Generating content for section: {title}")
-        self.logger.debug(f"Section parameters - Questions length: {len(questions)}, "
-                         f"User input length: {len(user_input)}, "
-                         f"Examples count: {len(best_practice_examples)}, "
-                         f"Max length: {max_length}")
-        
+        self.logger.debug(
+            f"Section parameters - Questions length: {len(questions)}, "
+            f"User input length: {len(user_input)}, "
+            f"Examples count: {len(best_practice_examples)}, "
+            f"Max length: {max_length}"
+        )
+
         messages = self._build_messages(
             title, questions, user_input, best_practice_examples, max_length
         )
@@ -140,8 +148,10 @@ class LLMService:
         try:
             response = self.llm.invoke(messages)
             content = response.content.strip()
-            self.logger.info(f"Successfully generated content for section: {title}, "
-                           f"Length: {len(content)} characters")
+            self.logger.info(
+                f"Successfully generated content for section: {title}, "
+                f"Length: {len(content)} characters"
+            )
             return content
         except Exception as e:
             error_msg = f"Failed to generate content for section '{title}': {str(e)}"
@@ -172,12 +182,14 @@ class LLMService:
             Generated section content incorporating attachment data
         """
         self.logger.info(f"Generating content with attachments for section: {title}")
-        self.logger.debug(f"Section parameters - Questions length: {len(questions)}, "
-                         f"User input length: {len(user_input)}, "
-                         f"Examples count: {len(best_practice_examples)}, "
-                         f"Attachments count: {len(attachment_summaries)}, "
-                         f"Max length: {max_length}")
-        
+        self.logger.debug(
+            f"Section parameters - Questions length: {len(questions)}, "
+            f"User input length: {len(user_input)}, "
+            f"Examples count: {len(best_practice_examples)}, "
+            f"Attachments count: {len(attachment_summaries)}, "
+            f"Max length: {max_length}"
+        )
+
         messages = self._build_messages_with_attachments(
             title,
             questions,
@@ -190,8 +202,10 @@ class LLMService:
         try:
             response = self.llm.invoke(messages)
             content = response.content.strip()
-            self.logger.info(f"Successfully generated content with attachments for section: {title}, "
-                           f"Length: {len(content)} characters")
+            self.logger.info(
+                f"Successfully generated content with attachments for section: {title}, "
+                f"Length: {len(content)} characters"
+            )
             return content
         except Exception as e:
             error_msg = f"Failed to generate content with attachments for section '{title}': {str(e)}"
@@ -220,7 +234,9 @@ class LLMService:
             List of messages for the LLM
         """
         system_prompt = get_system_prompt(max_length)
-        human_prompt = get_human_prompt(title, questions, user_input, best_practice_examples)
+        human_prompt = get_human_prompt(
+            title, questions, user_input, best_practice_examples
+        )
 
         return [
             SystemMessage(content=system_prompt),

@@ -59,27 +59,31 @@ LENGTH_CONSTRAINT_TEXT = "\n- Halte den Text unter {max_length} Zeichen"
 
 def format_examples(examples: list[str]) -> str:
     """Format best practice examples for the prompt."""
-    return "\n\n".join([
-        EXAMPLE_TEXT_TEMPLATE.format(index=i+1, content=example)
-        for i, example in enumerate(examples)
-    ])
+    return "\n\n".join(
+        [
+            EXAMPLE_TEXT_TEMPLATE.format(index=i + 1, content=example)
+            for i, example in enumerate(examples)
+        ]
+    )
 
 
 def format_attachments(summaries: list[str]) -> str:
     """Format attachment summaries for the prompt."""
-    return "\n\n".join([
-        ATTACHMENT_TEXT_TEMPLATE.format(index=i+1, content=summary)
-        for i, summary in enumerate(summaries)
-    ])
+    return "\n\n".join(
+        [
+            ATTACHMENT_TEXT_TEMPLATE.format(index=i + 1, content=summary)
+            for i, summary in enumerate(summaries)
+        ]
+    )
 
 
 def get_system_prompt(max_length: int = 0) -> str:
     """
     Get the system prompt with optional length constraint.
-    
+
     Args:
         max_length: Maximum length constraint (0 for no limit)
-        
+
     Returns:
         Formatted system prompt
     """
@@ -97,18 +101,18 @@ def get_human_prompt(
 ) -> str:
     """
     Get the human prompt for standard content generation.
-    
+
     Args:
         title: The section title
         questions: Questions to guide the content
         user_input: User-provided input
         best_practice_examples: List of example texts
-        
+
     Returns:
         Formatted human prompt
     """
     examples_text = format_examples(best_practice_examples)
-    
+
     return HUMAN_PROMPT_TEMPLATE.format(
         title=title,
         questions=questions,
@@ -126,20 +130,20 @@ def get_human_prompt_with_attachments(
 ) -> str:
     """
     Get the human prompt for content generation with attachments.
-    
+
     Args:
         title: The section title
         questions: Questions to guide the content
         user_input: User-provided input
         best_practice_examples: List of example texts
         attachment_summaries: List of attachment summaries
-        
+
     Returns:
         Formatted human prompt with attachments
     """
     examples_text = format_examples(best_practice_examples)
     attachments_text = format_attachments(attachment_summaries)
-    
+
     return HUMAN_PROMPT_WITH_ATTACHMENTS_TEMPLATE.format(
         title=title,
         questions=questions,
