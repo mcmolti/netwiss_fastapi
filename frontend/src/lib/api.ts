@@ -2,7 +2,10 @@
  * API utility functions for the proposal generator.
  */
 
-const API_BASE_URL = 'http://localhost:8000/api/v1'
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'
+
+// Export for use in other files
+export { API_BASE_URL }
 
 export interface TemplateListItem {
   id: string
@@ -138,4 +141,23 @@ export async function deleteFile(fileId: string): Promise<void> {
   if (!response.ok) {
     throw new Error(`Failed to delete file: ${response.status}`)
   }
+}
+
+/**
+ * Generate proposal sections.
+ */
+export async function generateProposalSections(payload: any): Promise<any> {
+  const response = await fetch(`${API_BASE_URL}/generate-sections`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload)
+  })
+  
+  if (!response.ok) {
+    throw new Error(`Failed to generate proposal sections: ${response.status}`)
+  }
+  
+  return response.json()
 }

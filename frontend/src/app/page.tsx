@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Textarea } from '@/components/ui/textarea'
 import { FileAttachment } from '@/components/FileAttachment'
-import { fetchAvailableTemplates, fetchProposalTemplate, fetchAvailableModels, type TemplateListItem, type ProposalTemplate, type AIModel } from '@/lib/api'
+import { fetchAvailableTemplates, fetchProposalTemplate, fetchAvailableModels, generateProposalSections, type TemplateListItem, type ProposalTemplate, type AIModel } from '@/lib/api'
 
 interface AttachmentData {
   id: string
@@ -161,19 +161,7 @@ export default function ProposalGenerator() {
       // Debug log the payload
       console.log('Sending payload:', JSON.stringify(payload, null, 2))
 
-      const response = await fetch('http://localhost:8000/api/v1/generate-sections', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload)
-      })
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-
-      const result: GenerationResponse = await response.json()
+      const result: GenerationResponse = await generateProposalSections(payload)
       
       // Extract generated content
       const generated: Record<string, string> = {}
