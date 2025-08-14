@@ -185,3 +185,8 @@
 2025-08-14 16:59:28 - app.services.proposal_service - WARNING - _process_section:112 - No user input provided for section zielsetzung_1, skipping generation
 2025-08-14 16:59:28 - app.services.proposal_service - WARNING - _process_section:112 - No user input provided for section zielsetzung_2, skipping generation
 2025-08-14 16:59:28 - app.services.proposal_service - INFO - process_request:86 - Completed processing proposal request with status: success
+2025-08-14 17:06:35 - app.services.maintenance - INFO - cleanup_old_files:48 - Starting file cleanup process
+2025-08-14 17:06:35 - app.services.maintenance - INFO - cleanup_old_files:104 - File cleanup completed: 0 files deleted, 0.0 KB freed, 0 errors
+2025-08-14 17:07:05 - app.main - INFO - lifespan:53 - Shutting down proposal generation backend...
+2025-08-14 17:07:05 - app.main - INFO - lifespan:57 - Stopping background file cleanup task...
+2025-08-14 17:07:05 - app.services.maintenance - INFO - start_periodic_cleanup:183 - Periodic cleanup task cancelled
