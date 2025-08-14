@@ -1,0 +1,54 @@
+2025-08-14 12:23:24 - app - INFO - setup_logging:98 - Logging system initialized
+2025-08-14 12:23:35 - app - INFO - setup_logging:98 - Logging system initialized
+2025-08-14 12:23:35 - app.main - INFO - lifespan:32 - Starting proposal generation backend...
+2025-08-14 14:16:03 - app - INFO - setup_logging:98 - Logging system initialized
+2025-08-14 14:17:28 - app.main - INFO - lifespan:41 - Shutting down proposal generation backend...
+2025-08-14 14:17:29 - app - INFO - setup_logging:98 - Logging system initialized
+2025-08-14 14:17:29 - app.main - INFO - lifespan:32 - Starting proposal generation backend...
+2025-08-14 14:19:00 - app.services.file_service - INFO - save_uploaded_file:81 - Successfully processed file: Detection_of_Conflicts_Contradictions_and_Inconsistencies_in_Regulatory_Documents_A_Literature_Review.pdf (ID: 551fd54c-3d8b-445f-a112-4e16064f2c21)
+2025-08-14 14:19:09 - app.services.file_service - INFO - save_uploaded_file:81 - Successfully processed file: Detection_of_Conflicts_Contradictions_and_Inconsistencies_in_Regulatory_Documents_A_Literature_Review.pdf (ID: d0b995f9-bdbb-414f-a03a-74b47c3f57c2)
+2025-08-14 14:19:15 - app.main - INFO - lifespan:41 - Shutting down proposal generation backend...
+2025-08-14 14:19:17 - app - INFO - setup_logging:98 - Logging system initialized
+2025-08-14 14:19:18 - app - INFO - setup_logging:98 - Logging system initialized
+2025-08-14 14:19:18 - app.main - INFO - lifespan:32 - Starting proposal generation backend...
+2025-08-14 14:19:31 - app.services.file_service - INFO - save_uploaded_file:81 - Successfully processed file: Detection_of_Conflicts_Contradictions_and_Inconsistencies_in_Regulatory_Documents_A_Literature_Review.pdf (ID: c8c4cdbe-2d04-45b8-8d44-5d213f1d09a3)
+2025-08-14 14:19:51 - app.services.web_scraping_service - INFO - extract_content_from_url:74 - Successfully extracted content from URL: https://www.microsoft.com/en-us/about
+2025-08-14 14:20:29 - app.services.proposal_service - INFO - process_request:59 - Processing proposal request with 4 sections using model: gpt-4o-mini
+2025-08-14 14:20:29 - app.services.llm_service - INFO - __init__:59 - Initialized LLM service with model: gpt-4o-mini, provider: openai
+2025-08-14 14:20:29 - app.services.llm_service - INFO - generate_section_content:130 - Generating content for section: Kurzvorstellung des Unternehmens
+2025-08-14 14:20:29 - app.services.llm_service - INFO - llm:82 - OpenAI client initialized successfully for model: gpt-4o-mini
+2025-08-14 14:20:32 - app.services.llm_service - INFO - generate_section_content:143 - Successfully generated content for section: Kurzvorstellung des Unternehmens, Length: 835 characters
+2025-08-14 14:20:32 - app.services.proposal_service - INFO - _process_section:146 - Successfully generated content for section kurzvorstellung, length: 835 characters
+2025-08-14 14:20:32 - app.services.proposal_service - WARNING - _process_section:106 - No user input provided for section herausforderungen, skipping generation
+2025-08-14 14:20:32 - app.services.proposal_service - WARNING - _process_section:106 - No user input provided for section zielsetzung_1, skipping generation
+2025-08-14 14:20:32 - app.services.proposal_service - WARNING - _process_section:106 - No user input provided for section zielsetzung_2, skipping generation
+2025-08-14 14:20:32 - app.services.proposal_service - INFO - process_request:84 - Completed processing proposal request with status: success
+2025-08-14 14:23:06 - app.services.web_scraping_service - INFO - extract_content_from_url:74 - Successfully extracted content from URL: https://www.microsoft.com/en-us/about
+2025-08-14 14:24:16 - app.services.file_service - INFO - save_uploaded_file:81 - Successfully processed file: Detection_of_Conflicts_Contradictions_and_Inconsistencies_in_Regulatory_Documents_A_Literature_Review.pdf (ID: 3e259fc4-efec-412e-8cde-f795f3999314)
+2025-08-14 14:26:45 - app.services.web_scraping_service - INFO - extract_content_from_url:74 - Successfully extracted content from URL: https://www.microsoft.com/en-us/about
+2025-08-14 14:26:51 - app.services.file_service - INFO - save_uploaded_file:81 - Successfully processed file: Detection_of_Conflicts_Contradictions_and_Inconsistencies_in_Regulatory_Documents_A_Literature_Review.pdf (ID: bb18c731-9394-4e60-920d-4d58ba8d8733)
+2025-08-14 14:27:10 - app.services.web_scraping_service - INFO - extract_content_from_url:74 - Successfully extracted content from URL: https://www.microsoft.com/en-us/about
+2025-08-14 14:28:30 - app.services.web_scraping_service - INFO - extract_content_from_url:74 - Successfully extracted content from URL: https://www.microsoft.com/en-us/about
+2025-08-14 14:28:54 - app.services.file_service - INFO - save_uploaded_file:81 - Successfully processed file: Detection_of_Conflicts_Contradictions_and_Inconsistencies_in_Regulatory_Documents_A_Literature_Review.pdf (ID: de4e6558-8260-4554-804f-15c9aea1ee26)
+2025-08-14 14:33:22 - app.services.web_scraping_service - INFO - extract_content_from_url:74 - Successfully extracted content from URL: https://www.microsoft.com/en-us/about
+2025-08-14 14:41:22 - app.services.web_scraping_service - INFO - extract_content_from_url:74 - Successfully extracted content from URL: https://www.microsoft.com/en-us/about
+2025-08-14 14:42:51 - app.services.file_service - INFO - save_uploaded_file:81 - Successfully processed file: Detection_of_Conflicts_Contradictions_and_Inconsistencies_in_Regulatory_Documents_A_Literature_Review.pdf (ID: 8ab8644f-587c-4237-b29a-90c82a1c6fad)
+2025-08-14 14:42:57 - app.services.web_scraping_service - INFO - extract_content_from_url:74 - Successfully extracted content from URL: https://www.microsoft.com/en-us/about
+2025-08-14 14:43:04 - app.services.proposal_service - INFO - process_request:59 - Processing proposal request with 4 sections using model: gpt-4o-mini
+2025-08-14 14:43:04 - app.services.llm_service - INFO - __init__:59 - Initialized LLM service with model: gpt-4o-mini, provider: openai
+2025-08-14 14:43:04 - app.services.proposal_service - INFO - _process_section:121 - Processing attachments for section kurzvorstellung
+2025-08-14 14:43:04 - app.services.summarization_service - INFO - summarize_for_questions:88 - Content truncated to 8000 characters
+2025-08-14 14:43:07 - app.services.summarization_service - INFO - summarize_for_questions:97 - Generated summary of 903 characters for pdf content
+2025-08-14 14:43:07 - app.services.web_scraping_service - INFO - extract_content_from_url:74 - Successfully extracted content from URL: https://www.microsoft.com/en-us/about
+2025-08-14 14:43:07 - app.services.summarization_service - INFO - summarize_for_questions:88 - Content truncated to 8000 characters
+2025-08-14 14:43:10 - app.services.summarization_service - INFO - summarize_for_questions:97 - Generated summary of 667 characters for web content
+2025-08-14 14:43:10 - app.services.proposal_service - INFO - _process_attachments:210 - Returning 2 summaries
+2025-08-14 14:43:10 - app.services.proposal_service - INFO - _process_section:123 - Generated 2 summaries for section kurzvorstellung
+2025-08-14 14:43:10 - app.services.llm_service - INFO - generate_section_content_with_attachments:174 - Generating content with attachments for section: Kurzvorstellung des Unternehmens
+2025-08-14 14:43:10 - app.services.llm_service - INFO - llm:82 - OpenAI client initialized successfully for model: gpt-4o-mini
+2025-08-14 14:43:13 - app.services.llm_service - INFO - generate_section_content_with_attachments:193 - Successfully generated content with attachments for section: Kurzvorstellung des Unternehmens, Length: 877 characters
+2025-08-14 14:43:13 - app.services.proposal_service - INFO - _process_section:146 - Successfully generated content for section kurzvorstellung, length: 877 characters
+2025-08-14 14:43:13 - app.services.proposal_service - WARNING - _process_section:106 - No user input provided for section herausforderungen, skipping generation
+2025-08-14 14:43:13 - app.services.proposal_service - WARNING - _process_section:106 - No user input provided for section zielsetzung_1, skipping generation
+2025-08-14 14:43:13 - app.services.proposal_service - WARNING - _process_section:106 - No user input provided for section zielsetzung_2, skipping generation
+2025-08-14 14:43:13 - app.services.proposal_service - INFO - process_request:84 - Completed processing proposal request with status: success

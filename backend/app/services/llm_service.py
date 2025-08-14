@@ -10,6 +10,13 @@ from typing import List, Optional
 from langchain.schema import BaseMessage, HumanMessage, SystemMessage
 from langchain_openai import ChatOpenAI
 
+from ..config.logging import get_logger
+from ..config.prompts import (
+    get_system_prompt,
+    get_human_prompt,
+    get_human_prompt_with_attachments,
+)
+
 
 class LLMService:
     """
@@ -36,16 +43,20 @@ class LLMService:
             model_name: The AI model to use
             temperature: Temperature setting for response generation
         """
+        self.logger = get_logger("services.llm_service")
+        
         if model_name not in self.SUPPORTED_MODELS:
-            raise ValueError(
-                f"Unsupported model: {model_name}. Supported models: {list(self.SUPPORTED_MODELS.keys())}"
-            )
+            error_msg = f"Unsupported model: {model_name}. Supported models: {list(self.SUPPORTED_MODELS.keys())}"
+            self.logger.error(error_msg)
+            raise ValueError(error_msg)
 
         self.model_name = model_name
         # Important: Temperature is set to 1 as the default value, as it is now unsupported by the OpenAI GPT5 Models
         self.temperature = temperature
         self.provider = self.SUPPORTED_MODELS[model_name]
         self._llm = None
+        
+        self.logger.info(f"Initialized LLM service with model: {model_name}, provider: {self.provider}")
 
     @property
     def llm(self):
@@ -56,35 +67,42 @@ class LLMService:
             Configured LLM instance (ChatOpenAI or ChatAnthropic)
         """
         if self._llm is None:
+            self.logger.debug(f"Initializing LLM client for provider: {self.provider}")
+            
             if self.provider == "openai":
                 api_key = os.getenv("OPENAI_API_KEY")
                 if not api_key:
-                    raise ValueError(
-                        "OPENAI_API_KEY environment variable is required for OpenAI models"
-                    )
+                    error_msg = "OPENAI_API_KEY environment variable is required for OpenAI models"
+                    self.logger.error(error_msg)
+                    raise ValueError(error_msg)
 
                 self._llm = ChatOpenAI(
                     model=self.model_name, temperature=self.temperature, api_key=api_key
                 )
+                self.logger.info(f"OpenAI client initialized successfully for model: {self.model_name}")
+                
             elif self.provider == "anthropic":
                 try:
                     from langchain_anthropic import ChatAnthropic
                 except ImportError:
-                    raise ValueError(
-                        "langchain_anthropic is required for Anthropic models. Install with: pip install langchain-anthropic"
-                    )
+                    error_msg = "langchain_anthropic is required for Anthropic models. Install with: pip install langchain-anthropic"
+                    self.logger.error(error_msg)
+                    raise ValueError(error_msg)
 
                 api_key = os.getenv("ANTHROPIC_API_KEY")
                 if not api_key:
-                    raise ValueError(
-                        "ANTHROPIC_API_KEY environment variable is required for Anthropic models"
-                    )
+                    error_msg = "ANTHROPIC_API_KEY environment variable is required for Anthropic models"
+                    self.logger.error(error_msg)
+                    raise ValueError(error_msg)
 
                 self._llm = ChatAnthropic(
                     model=self.model_name, temperature=self.temperature, api_key=api_key
                 )
+                self.logger.info(f"Anthropic client initialized successfully for model: {self.model_name}")
             else:
-                raise ValueError(f"Unsupported provider: {self.provider}")
+                error_msg = f"Unsupported provider: {self.provider}"
+                self.logger.error(error_msg)
+                raise ValueError(error_msg)
 
         return self._llm
 
@@ -109,15 +127,26 @@ class LLMService:
         Returns:
             Generated section content
         """
+        self.logger.info(f"Generating content for section: {title}")
+        self.logger.debug(f"Section parameters - Questions length: {len(questions)}, "
+                         f"User input length: {len(user_input)}, "
+                         f"Examples count: {len(best_practice_examples)}, "
+                         f"Max length: {max_length}")
+        
         messages = self._build_messages(
             title, questions, user_input, best_practice_examples, max_length
         )
 
         try:
             response = self.llm.invoke(messages)
-            return response.content.strip()
+            content = response.content.strip()
+            self.logger.info(f"Successfully generated content for section: {title}, "
+                           f"Length: {len(content)} characters")
+            return content
         except Exception as e:
-            raise RuntimeError(f"Failed to generate content: {str(e)}")
+            error_msg = f"Failed to generate content for section '{title}': {str(e)}"
+            self.logger.error(error_msg)
+            raise RuntimeError(error_msg)
 
     def generate_section_content_with_attachments(
         self,
@@ -142,6 +171,13 @@ class LLMService:
         Returns:
             Generated section content incorporating attachment data
         """
+        self.logger.info(f"Generating content with attachments for section: {title}")
+        self.logger.debug(f"Section parameters - Questions length: {len(questions)}, "
+                         f"User input length: {len(user_input)}, "
+                         f"Examples count: {len(best_practice_examples)}, "
+                         f"Attachments count: {len(attachment_summaries)}, "
+                         f"Max length: {max_length}")
+        
         messages = self._build_messages_with_attachments(
             title,
             questions,
@@ -153,9 +189,14 @@ class LLMService:
 
         try:
             response = self.llm.invoke(messages)
-            return response.content.strip()
+            content = response.content.strip()
+            self.logger.info(f"Successfully generated content with attachments for section: {title}, "
+                           f"Length: {len(content)} characters")
+            return content
         except Exception as e:
-            raise RuntimeError(f"Failed to generate content: {str(e)}")
+            error_msg = f"Failed to generate content with attachments for section '{title}': {str(e)}"
+            self.logger.error(error_msg)
+            raise RuntimeError(error_msg)
 
     def _build_messages(
         self,
@@ -178,10 +219,8 @@ class LLMService:
         Returns:
             List of messages for the LLM
         """
-        system_prompt = self._create_system_prompt(max_length)
-        human_prompt = self._create_human_prompt(
-            title, questions, user_input, best_practice_examples
-        )
+        system_prompt = get_system_prompt(max_length)
+        human_prompt = get_human_prompt(title, questions, user_input, best_practice_examples)
 
         return [
             SystemMessage(content=system_prompt),
@@ -211,8 +250,8 @@ class LLMService:
         Returns:
             List of messages for the LLM
         """
-        system_prompt = self._create_system_prompt(max_length)
-        human_prompt = self._create_human_prompt_with_attachments(
+        system_prompt = get_system_prompt(max_length)
+        human_prompt = get_human_prompt_with_attachments(
             title, questions, user_input, best_practice_examples, attachment_summaries
         )
 
@@ -220,120 +259,3 @@ class LLMService:
             SystemMessage(content=system_prompt),
             HumanMessage(content=human_prompt),
         ]
-
-    def _create_system_prompt(self, max_length: int) -> str:
-        """
-        Create the system prompt for the LLM.
-
-        Args:
-            max_length: Maximum length constraint
-
-        Returns:
-            System prompt string
-        """
-        base_prompt = """Du bist ein Experte für die Erstellung von Projekt- und Förderanträgen für Wirtschaftsunternehmen. 
-
-Deine Aufgabe ist es, basierend auf den gegebenen Leitfragen, dem Benutzerinput und den Best-Practice-Beispielen einen professionellen und strukturierten Abschnitt zu verfassen.
-
-Beachte dabei:
-- Verwende eine professionelle, aber zugängliche Sprache
-- Strukturiere den Text logisch und kohärent
-- Nutze die Best-Practice-Beispiele als Orientierung für Stil und Tiefe
-- Gehe spezifisch auf den Benutzerinput ein
-- Stelle sicher, dass alle wichtigen Aspekte der Leitfragen abgedeckt werden"""
-
-        if max_length > 0:
-            base_prompt += f"\n- Halte den Text unter {max_length} Zeichen"
-
-        return base_prompt
-
-    def _create_human_prompt(
-        self,
-        title: str,
-        questions: str,
-        user_input: str,
-        best_practice_examples: List[str],
-    ) -> str:
-        """
-        Create the human prompt for the LLM.
-
-        Args:
-            title: The section title
-            questions: Questions to guide the content
-            user_input: User-provided input
-            best_practice_examples: List of example texts
-
-        Returns:
-            Human prompt string
-        """
-        examples_text = "\n\n".join(
-            [
-                f"Beispiel {i+1}:\n{example}"
-                for i, example in enumerate(best_practice_examples)
-            ]
-        )
-
-        return f"""Abschnittstitel: {title}
-
-Leitfragen:
-{questions}
-
-Benutzerinput:
-{user_input}
-
-Best-Practice-Beispiele:
-{examples_text}
-
-Bitte erstelle basierend auf diesen Informationen einen professionellen Abschnitt für einen Projektantrag. Wiederhole den Abschnittstitel nicht im Text, sondern beginne direkt mit dem Inhalt."""
-
-    def _create_human_prompt_with_attachments(
-        self,
-        title: str,
-        questions: str,
-        user_input: str,
-        best_practice_examples: List[str],
-        attachment_summaries: List[str],
-    ) -> str:
-        """
-        Create the human prompt for the LLM, including attachment summaries.
-
-        Args:
-            title: The section title
-            questions: Questions to guide the content
-            user_input: User-provided input
-            attachment_summaries: List of  additional details provided by the user
-            best_practice_examples: List of example texts
-
-
-        Returns:
-            Human prompt string
-        """
-        examples_text = "\n\n".join(
-            [
-                f"Beispiel {i+1}:\n{example}"
-                for i, example in enumerate(best_practice_examples)
-            ]
-        )
-        attachments_text = "\n\n".join(
-            [
-                f"Anhangszusammenfassung {i+1}:\n{summary}"
-                for i, summary in enumerate(attachment_summaries)
-            ]
-        )
-
-        return f"""Abschnittstitel: {title}
-
-Leitfragen:
-{questions}
-
-Benutzerinput:
-{user_input}
-
-Zusätzliche Details:
-{attachments_text}
-
-Best-Practice-Beispiele:
-{examples_text}
-
-
-Bitte erstelle basierend auf diesen Informationen einen professionellen Abschnitt für einen Projektantrag. Wiederhole den Abschnittstitel nicht im Text, sondern beginne direkt mit dem Inhalt."""

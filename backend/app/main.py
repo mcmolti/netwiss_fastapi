@@ -10,9 +10,13 @@ from dotenv import load_dotenv
 
 from .routers import proposal_router, template_router
 from .routers.attachments import router as attachments_router
+from .config.logging import setup_logging, get_logger
 
 # Load environment variables
 load_dotenv()
+
+# Initialize logging
+setup_logging()
 
 
 @asynccontextmanager
@@ -22,17 +26,19 @@ async def lifespan(app: FastAPI):
 
     Handles startup and shutdown events for the FastAPI application.
     """
+    logger = get_logger("main")
+    
     # Startup
-    print("Starting proposal generation backend...")
+    logger.info("Starting proposal generation backend...")
 
     # Verify OpenAI API key is available
     if not os.getenv("OPENAI_API_KEY"):
-        print("Warning: OPENAI_API_KEY not found in environment variables")
+        logger.warning("OPENAI_API_KEY not found in environment variables")
 
     yield
 
     # Shutdown
-    print("Shutting down proposal generation backend...")
+    logger.info("Shutting down proposal generation backend...")
 
 
 def create_app() -> FastAPI:
