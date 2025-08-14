@@ -82,13 +82,16 @@ class Section(BaseModel):
     )
     user_input: str
     max_section_length: int
-    # New fields for attachments
-    attached_files: List[str] = Field(default_factory=list, description="File IDs")
-    attached_urls: List[HttpUrl] = Field(default_factory=list)
-    attachment_summaries: List[str] = Field(
+    # New fields for attachments (optional for backward compatibility)
+    attached_files: Optional[List[str]] = Field(
+        default_factory=list, description="File IDs"
+    )
+    attached_urls: Optional[List[str]] = Field(
+        default_factory=list, description="URL strings"
+    )
+    attachment_summaries: Optional[List[str]] = Field(
         default_factory=list, description="AI-generated summaries"
     )
-    attachments: List[AttachmentData] = Field(default_factory=list)
 
     class Config:
         populate_by_name = True

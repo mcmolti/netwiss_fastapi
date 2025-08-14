@@ -117,7 +117,7 @@ export async function extractURLContent(url: string): Promise<URLContentResponse
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(url),
+    body: JSON.stringify({ url: url }),
   })
   
   if (!response.ok) {

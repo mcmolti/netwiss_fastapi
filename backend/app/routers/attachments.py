@@ -7,11 +7,18 @@ from URLs, and managing attachments for proposal generation.
 
 from typing import List
 from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
-from pydantic import HttpUrl
+from pydantic import HttpUrl, BaseModel
 
 from ..models.proposal import FileUploadResponse, URLContentResponse
 from ..services.file_service import FileService
 from ..services.web_scraping_service import WebScrapingService
+
+
+class URLExtractionRequest(BaseModel):
+    """Request model for URL content extraction."""
+
+    url: HttpUrl
+
 
 router = APIRouter(prefix="/api", tags=["attachments"])
 
@@ -87,18 +94,18 @@ async def delete_file(file_id: str):
 
 
 @router.post("/urls/extract", response_model=URLContentResponse)
-async def extract_url_content(url: HttpUrl):
+async def extract_url_content(request: URLExtractionRequest):
     """
     Extract text content from a URL.
 
     Args:
-        url: The URL to extract content from
+        request: The URL extraction request containing the URL
 
     Returns:
         Extracted content and metadata
     """
     try:
-        result = await web_service.extract_content_from_url(str(url))
+        result = await web_service.extract_content_from_url(str(request.url))
 
         return URLContentResponse(
             url=result["url"],

@@ -301,8 +301,9 @@ Bitte erstelle basierend auf diesen Informationen einen professionellen Abschnit
             title: The section title
             questions: Questions to guide the content
             user_input: User-provided input
+            attachment_summaries: List of  additional details provided by the user
             best_practice_examples: List of example texts
-            attachment_summaries: List of AI-generated summaries from attachments
+
 
         Returns:
             Human prompt string
@@ -328,10 +329,11 @@ Leitfragen:
 Benutzerinput:
 {user_input}
 
+Zusätzliche Details:
+{attachments_text}
+
 Best-Practice-Beispiele:
 {examples_text}
 
-Zusammenfassungen der Anhänge:
-{attachments_text}
 
 Bitte erstelle basierend auf diesen Informationen einen professionellen Abschnitt für einen Projektantrag. Wiederhole den Abschnittstitel nicht im Text, sondern beginne direkt mit dem Inhalt."""

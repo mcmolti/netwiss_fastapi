@@ -20,6 +20,7 @@ interface AttachmentData {
   content?: string
   status: 'uploading' | 'processing' | 'ready' | 'error'
   error?: string
+  originalUrl?: string // For URL attachments, store the original URL
 }
 
 interface FileAttachmentProps {
@@ -134,7 +135,8 @@ export function FileAttachment({ onAttachmentsChange, initialAttachments = [], d
         name: response.title || urlInput,
         content: response.content,
         status: response.status === 'success' ? 'ready' : 'error',
-        error: response.status !== 'success' ? 'Fehler beim Laden der URL' : undefined
+        error: response.status !== 'success' ? 'Fehler beim Laden der URL' : undefined,
+        originalUrl: urlInput // Store the original URL
       }
 
       const finalAttachments = updatedAttachments.map(att => 
@@ -146,7 +148,8 @@ export function FileAttachment({ onAttachmentsChange, initialAttachments = [], d
       const errorAttachment: AttachmentData = {
         ...newAttachment,
         status: 'error',
-        error: error instanceof Error ? error.message : 'Fehler beim Laden der URL'
+        error: error instanceof Error ? error.message : 'Fehler beim Laden der URL',
+        originalUrl: urlInput // Store the original URL even on error
       }
 
       const finalAttachments = updatedAttachments.map(att => 

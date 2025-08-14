@@ -90,6 +90,11 @@ class ProposalGenerationService:
         Returns:
             Generated section response
         """
+        # Debug logging
+        print(f"Processing section: {section_name}")
+        print(f"Attached files: {section.attached_files}")
+        print(f"Attached URLs: {section.attached_urls}")
+
         # Skip generation if no user input provided
         if not section.user_input.strip():
             return SectionResponse(
@@ -101,11 +106,16 @@ class ProposalGenerationService:
 
         # Process attachments if any
         attachment_summaries = []
-        if section.attached_files or section.attached_urls:
+        if (section.attached_files and len(section.attached_files) > 0) or (
+            section.attached_urls and len(section.attached_urls) > 0
+        ):
+            print(f"Processing attachments for section {section_name}")
             attachment_summaries = await self._process_attachments(section)
+            print(f"Generated {len(attachment_summaries)} summaries")
 
         # Generate content using LLM service
         if attachment_summaries:
+            print(f"Using LLM with {len(attachment_summaries)} attachment summaries")
             generated_content = llm_service.generate_section_content_with_attachments(
                 title=section.title,
                 questions=section.questions,
@@ -115,6 +125,7 @@ class ProposalGenerationService:
                 max_length=section.max_section_length,
             )
         else:
+            print(f"Using LLM without attachments")
             generated_content = llm_service.generate_section_content(
                 title=section.title,
                 questions=section.questions,
@@ -141,26 +152,38 @@ class ProposalGenerationService:
             List of generated summaries
         """
         summaries = []
+        print(
+            f"_process_attachments called with files: {section.attached_files}, urls: {section.attached_urls}"
+        )
 
         # Process file attachments
-        for file_id in section.attached_files:
+        for file_id in section.attached_files or []:
+            print(f"Processing file: {file_id}")
             try:
                 file_content = await self.file_service.get_file_content(file_id)
                 if file_content:
+                    print(f"Got file content, length: {len(file_content)}")
                     summary = await self.summarization_service.summarize_for_questions(
                         content=file_content,
                         questions=section.questions,
                         content_type="pdf",
                     )
                     summaries.append(summary)
+                    print(f"Generated file summary: {summary[:100]}...")
+                else:
+                    print(f"No content found for file {file_id}")
             except Exception as e:
                 print(f"Error processing file {file_id}: {str(e)}")
                 summaries.append(f"Fehler beim Verarbeiten der Datei: {str(e)}")
 
         # Process URL attachments
-        for url in section.attached_urls:
+        for url in section.attached_urls or []:
+            print(f"Processing URL: {url}")
             try:
                 url_result = await self.web_service.extract_content_from_url(str(url))
+                print(
+                    f"URL extraction result: status={url_result.get('status')}, content_length={len(url_result.get('content', ''))}"
+                )
                 if url_result["status"] == "success" and url_result["content"]:
                     summary = await self.summarization_service.summarize_for_questions(
                         content=url_result["content"],
@@ -168,8 +191,12 @@ class ProposalGenerationService:
                         content_type="web",
                     )
                     summaries.append(summary)
+                    print(f"Generated URL summary: {summary[:100]}...")
+                else:
+                    print(f"No content found for URL {url}")
             except Exception as e:
                 print(f"Error processing URL {url}: {str(e)}")
                 summaries.append(f"Fehler beim Verarbeiten der URL: {str(e)}")
 
+        print(f"Returning {len(summaries)} summaries")
         return summaries

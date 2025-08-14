@@ -21,6 +21,7 @@ interface AttachmentData {
   content?: string
   status: 'uploading' | 'processing' | 'ready' | 'error'
   error?: string
+  originalUrl?: string // For URL attachments, store the original URL
 }
 
 interface Section {
@@ -141,18 +142,24 @@ export default function ProposalGenerator() {
         sections: Object.entries(proposalData.sections).reduce((acc, [key, section]) => {
           const sectionAttachments = attachments[key] || []
           acc[key] = {
-            ...section,
+            title: section.title,
+            questions: section.questions,
+            best_practice_beispiele: section.best_practice_beispiele,
             user_input: userInputs[key] || '',
+            max_section_length: section.max_section_length,
             attached_files: sectionAttachments
               .filter(att => att.type === 'file' && att.status === 'ready')
               .map(att => att.id),
             attached_urls: sectionAttachments
               .filter(att => att.type === 'url' && att.status === 'ready')
-              .map(att => att.name) // Use the original URL as the value
+              .map(att => att.originalUrl || att.name) // Use originalUrl or fallback to name
           }
           return acc
-        }, {} as Record<string, Section>)
+        }, {} as Record<string, any>)
       }
+
+      // Debug log the payload
+      console.log('Sending payload:', JSON.stringify(payload, null, 2))
 
       const response = await fetch('http://localhost:8000/api/v1/generate-sections', {
         method: 'POST',
