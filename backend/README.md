@@ -7,6 +7,7 @@ A comprehensive FastAPI backend for AI-powered business proposal generation with
 - **Multi-LLM Support**: Integrates OpenAI and Anthropic models with dynamic model selection
 - **Attachment Processing**: PDF file uploads and web URL content extraction with AI-powered summarization
 - **Template Management**: Dynamic proposal templates with configurable sections
+- **Automated Maintenance**: Background file cleanup with configurable retention periods (24h default)
 - **Modular Architecture**: Clean separation of concerns with models, services, and API layers
 - **Async Processing**: Non-blocking file and web content processing
 - **Comprehensive Logging**: Structured logging with configurable levels
@@ -31,13 +32,16 @@ backend/
 │   ├── routers/                  # API route handlers
 │   │   ├── __init__.py
 │   │   ├── attachments.py       # File upload and URL processing endpoints
+│   │   ├── maintenance.py       # System maintenance and cleanup endpoints
 │   │   ├── proposal.py          # Proposal generation endpoints
 │   │   └── template.py          # Template management endpoints
 │   └── services/                 # Business logic services
 │       ├── __init__.py
 │       ├── file_service.py      # File upload and management
 │       ├── llm_service.py       # Multi-LLM integration (OpenAI, Anthropic)
-│       ├── proposal_service.py   # Enhanced proposal generation with attachments
+│       ├── maintenance_service.py # Automated file cleanup and maintenance
+│       ├── proposal_service.py   # Legacy proposal generation logic
+│       ├── proposal_service_new.py # Enhanced proposal generation with attachments
 │       ├── summarization_service.py # AI-powered content summarization
 │       ├── template_service.py   # Template management logic
 │       └── web_scraping_service.py # Web content extraction
@@ -105,6 +109,12 @@ The server exposes the following main endpoint groups:
 - `POST /api/v1/attachments/url` - Extract content from web URLs
 - `DELETE /api/v1/attachments/{file_id}` - Delete uploaded files
 
+#### Maintenance & Administration
+- `POST /api/v1/maintenance/cleanup` - Manually trigger file cleanup
+- `GET /api/v1/maintenance/statistics` - Get file storage statistics
+- `GET /api/v1/maintenance/config` - Get current maintenance configuration
+- `PUT /api/v1/maintenance/config` - Update maintenance settings
+
 #### Example Request with Attachments
 
 ```bash
@@ -131,6 +141,21 @@ curl -X POST "http://localhost:8000/api/v1/generate-sections" \
 ```bash
 curl -X POST "http://localhost:8000/api/v1/attachments/upload" \
      -F "file=@document.pdf"
+```
+
+#### Maintenance Examples
+
+```bash
+# Trigger manual file cleanup
+curl -X POST "http://localhost:8000/api/v1/maintenance/cleanup"
+
+# Get file storage statistics
+curl -X GET "http://localhost:8000/api/v1/maintenance/statistics"
+
+# Update retention period to 48 hours
+curl -X PUT "http://localhost:8000/api/v1/maintenance/config" \
+     -H "Content-Type: application/json" \
+     -d '{"retention_hours": 48}'
 ```
 
 #### Example Response
@@ -293,6 +318,20 @@ Dynamic proposal templates with flexible structure:
 - **Section Configuration**: Customizable questions and examples
 - **API Access**: RESTful template management
 - **Version Control**: Template versioning support
+
+### Automated Maintenance
+
+Comprehensive system maintenance with automated file cleanup:
+
+- **Background Cleanup**: Automatic deletion of files older than 24 hours (configurable)
+- **Scheduled Tasks**: Runs cleanup every hour to maintain storage efficiency
+- **Manual Control**: API endpoints for manual cleanup and configuration
+- **Statistics & Monitoring**: Real-time file storage statistics and cleanup reports
+- **Configurable Retention**: Adjustable file retention periods via API
+- **Graceful Handling**: Safe cleanup with proper error handling and logging
+
+The maintenance system ensures optimal storage usage and prevents accumulation of old temporary files, maintaining system performance over time.
+
 
 
 
