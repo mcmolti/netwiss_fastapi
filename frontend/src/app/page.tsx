@@ -11,7 +11,17 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Textarea } from '@/components/ui/textarea'
+import { FileAttachment } from '@/components/FileAttachment'
 import { fetchAvailableTemplates, fetchProposalTemplate, fetchAvailableModels, type TemplateListItem, type ProposalTemplate, type AIModel } from '@/lib/api'
+
+interface AttachmentData {
+  id: string
+  type: 'file' | 'url'
+  name: string
+  content?: string
+  status: 'uploading' | 'processing' | 'ready' | 'error'
+  error?: string
+}
 
 interface Section {
   title: string
@@ -19,6 +29,9 @@ interface Section {
   best_practice_beispiele: string[]
   user_input: string
   max_section_length: number
+  attached_files?: string[]
+  attached_urls?: string[]
+  attachment_summaries?: string[]
 }
 
 interface ProposalData {
@@ -40,6 +53,7 @@ interface GenerationResponse {
 export default function ProposalGenerator() {
   const [proposalData, setProposalData] = useState<ProposalData | null>(null)
   const [userInputs, setUserInputs] = useState<Record<string, string>>({})
+  const [attachments, setAttachments] = useState<Record<string, AttachmentData[]>>({})
   const [generatedContent, setGeneratedContent] = useState<Record<string, string>>({})
   const [selectedProposal, setSelectedProposal] = useState<string>('')
   const [availableProposals, setAvailableProposals] = useState<TemplateListItem[]>([])
@@ -86,12 +100,15 @@ export default function ProposalGenerator() {
       const template = await fetchProposalTemplate(templateId)
       setProposalData(template)
       
-      // Initialize user inputs
+      // Initialize user inputs and attachments
       const initialInputs: Record<string, string> = {}
+      const initialAttachments: Record<string, AttachmentData[]> = {}
       Object.keys(template.sections).forEach(key => {
         initialInputs[key] = ''
+        initialAttachments[key] = []
       })
       setUserInputs(initialInputs)
+      setAttachments(initialAttachments)
     } catch (error) {
       console.error('Fehler beim Laden der Antragsdaten:', error)
     } finally {
@@ -106,6 +123,13 @@ export default function ProposalGenerator() {
     }))
   }
 
+  const handleAttachmentsChange = (sectionKey: string, sectionAttachments: AttachmentData[]) => {
+    setAttachments(prev => ({
+      ...prev,
+      [sectionKey]: sectionAttachments
+    }))
+  }
+
   const generateProposal = async () => {
     if (!proposalData) return
 
@@ -115,9 +139,16 @@ export default function ProposalGenerator() {
       const payload = {
         model: selectedModel,
         sections: Object.entries(proposalData.sections).reduce((acc, [key, section]) => {
+          const sectionAttachments = attachments[key] || []
           acc[key] = {
             ...section,
-            user_input: userInputs[key] || ''
+            user_input: userInputs[key] || '',
+            attached_files: sectionAttachments
+              .filter(att => att.type === 'file' && att.status === 'ready')
+              .map(att => att.id),
+            attached_urls: sectionAttachments
+              .filter(att => att.type === 'url' && att.status === 'ready')
+              .map(att => att.name) // Use the original URL as the value
           }
           return acc
         }, {} as Record<string, Section>)
@@ -248,6 +279,13 @@ export default function ProposalGenerator() {
                     className="min-h-[100px]"
                   />
                 </div>
+
+                {/* File Attachment Component */}
+                <FileAttachment
+                  onAttachmentsChange={(sectionAttachments) => handleAttachmentsChange(sectionKey, sectionAttachments)}
+                  initialAttachments={attachments[sectionKey] || []}
+                  disabled={isGenerating}
+                />
                 
                 {generatedContent[sectionKey] && (
                   <div>
@@ -316,7 +354,12 @@ export default function ProposalGenerator() {
               </DropdownMenu>
                 <Button 
                   onClick={generateProposal} 
-                  disabled={isGenerating || Object.values(userInputs).every(input => !input.trim())}
+                  disabled={isGenerating || (
+                    Object.values(userInputs).every(input => !input.trim()) && 
+                    Object.values(attachments).every(sectionAttachments => 
+                      sectionAttachments.filter(att => att.status === 'ready').length === 0
+                    )
+                  )}
                   className="px-8 py-2"
                 >
                   {isGenerating ? 'Generiere...' : 'Antragsinhalte generieren'}

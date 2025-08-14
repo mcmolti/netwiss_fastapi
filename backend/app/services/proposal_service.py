@@ -5,7 +5,7 @@ This module contains the core business logic for processing section generation
 requests, coordinating between the data models and LLM service.
 """
 
-from typing import Dict
+from typing import Dict, List
 from ..models import (
     Section,
     SectionResponse,
@@ -13,6 +13,9 @@ from ..models import (
     ProposalResponse,
 )
 from .llm_service import LLMService
+from .file_service import FileService
+from .web_scraping_service import WebScrapingService
+from .summarization_service import SummarizationService
 
 
 class ProposalGenerationService:
@@ -32,7 +35,11 @@ class ProposalGenerationService:
         """
         # We no longer store a single LLM service instance
         # since we create them dynamically based on the request model
-        pass
+
+        # Initialize attachment processing services
+        self.file_service = FileService()
+        self.web_service = WebScrapingService()
+        self.summarization_service = SummarizationService()
 
     async def process_request(self, request: ProposalRequest) -> ProposalResponse:
         """
@@ -92,14 +99,29 @@ class ProposalGenerationService:
                 status="skipped",
             )
 
+        # Process attachments if any
+        attachment_summaries = []
+        if section.attached_files or section.attached_urls:
+            attachment_summaries = await self._process_attachments(section)
+
         # Generate content using LLM service
-        generated_content = llm_service.generate_section_content(
-            title=section.title,
-            questions=section.questions,
-            user_input=section.user_input,
-            best_practice_examples=section.best_practice_beispiele,
-            max_length=section.max_section_length,
-        )
+        if attachment_summaries:
+            generated_content = llm_service.generate_section_content_with_attachments(
+                title=section.title,
+                questions=section.questions,
+                user_input=section.user_input,
+                best_practice_examples=section.best_practice_beispiele,
+                attachment_summaries=attachment_summaries,
+                max_length=section.max_section_length,
+            )
+        else:
+            generated_content = llm_service.generate_section_content(
+                title=section.title,
+                questions=section.questions,
+                user_input=section.user_input,
+                best_practice_examples=section.best_practice_beispiele,
+                max_length=section.max_section_length,
+            )
 
         return SectionResponse(
             title=section.title,
@@ -107,3 +129,47 @@ class ProposalGenerationService:
             user_input=section.user_input,
             status="success",
         )
+
+    async def _process_attachments(self, section: Section) -> List[str]:
+        """
+        Process attachments for a section and generate summaries.
+
+        Args:
+            section: The section with attachments
+
+        Returns:
+            List of generated summaries
+        """
+        summaries = []
+
+        # Process file attachments
+        for file_id in section.attached_files:
+            try:
+                file_content = await self.file_service.get_file_content(file_id)
+                if file_content:
+                    summary = await self.summarization_service.summarize_for_questions(
+                        content=file_content,
+                        questions=section.questions,
+                        content_type="pdf",
+                    )
+                    summaries.append(summary)
+            except Exception as e:
+                print(f"Error processing file {file_id}: {str(e)}")
+                summaries.append(f"Fehler beim Verarbeiten der Datei: {str(e)}")
+
+        # Process URL attachments
+        for url in section.attached_urls:
+            try:
+                url_result = await self.web_service.extract_content_from_url(str(url))
+                if url_result["status"] == "success" and url_result["content"]:
+                    summary = await self.summarization_service.summarize_for_questions(
+                        content=url_result["content"],
+                        questions=section.questions,
+                        content_type="web",
+                    )
+                    summaries.append(summary)
+            except Exception as e:
+                print(f"Error processing URL {url}: {str(e)}")
+                summaries.append(f"Fehler beim Verarbeiten der URL: {str(e)}")
+
+        return summaries

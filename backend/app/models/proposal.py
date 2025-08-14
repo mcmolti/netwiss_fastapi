@@ -5,8 +5,59 @@ This module defines Pydantic models for request and response data structures
 used in the proposal section generation API.
 """
 
-from typing import Dict, List, Optional
-from pydantic import BaseModel, Field
+from typing import Dict, List, Optional, Union
+from pydantic import BaseModel, Field, HttpUrl
+
+
+class AttachmentData(BaseModel):
+    """
+    Model for attachment data (file or URL).
+
+    Attributes:
+        type: Type of attachment ('file' or 'url')
+        content: Extracted text content from the attachment
+        metadata: Additional metadata about the attachment
+    """
+
+    type: str = Field(..., description="Type: 'file' or 'url'")
+    content: Optional[str] = Field(None, description="Extracted text content")
+    metadata: Dict[str, Union[str, int]] = Field(default_factory=dict)
+
+
+class FileUploadResponse(BaseModel):
+    """
+    Response model for file uploads.
+
+    Attributes:
+        file_id: Unique identifier for the uploaded file
+        filename: Original filename
+        size: File size in bytes
+        content_type: MIME type of the file
+        extracted_text: Extracted text content from the file
+    """
+
+    file_id: str
+    filename: str
+    size: int
+    content_type: str
+    extracted_text: Optional[str] = None
+
+
+class URLContentResponse(BaseModel):
+    """
+    Response model for URL content extraction.
+
+    Attributes:
+        url: The processed URL
+        title: Extracted title from the webpage
+        content: Extracted text content
+        status: Status of the extraction
+    """
+
+    url: str
+    title: Optional[str] = None
+    content: str
+    status: str = "success"
 
 
 class Section(BaseModel):
@@ -19,6 +70,9 @@ class Section(BaseModel):
         best_practice_beispiele: List of best practice examples
         user_input: User-provided input for this section
         max_section_length: Maximum allowed length for the section (0 means no limit)
+        attached_files: List of file IDs attached to this section
+        attached_urls: List of URLs attached to this section
+        attachment_summaries: AI-generated summaries of attached content
     """
 
     title: str
@@ -28,6 +82,13 @@ class Section(BaseModel):
     )
     user_input: str
     max_section_length: int
+    # New fields for attachments
+    attached_files: List[str] = Field(default_factory=list, description="File IDs")
+    attached_urls: List[HttpUrl] = Field(default_factory=list)
+    attachment_summaries: List[str] = Field(
+        default_factory=list, description="AI-generated summaries"
+    )
+    attachments: List[AttachmentData] = Field(default_factory=list)
 
     class Config:
         populate_by_name = True

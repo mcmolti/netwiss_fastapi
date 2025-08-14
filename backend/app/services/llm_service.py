@@ -119,6 +119,44 @@ class LLMService:
         except Exception as e:
             raise RuntimeError(f"Failed to generate content: {str(e)}")
 
+    def generate_section_content_with_attachments(
+        self,
+        title: str,
+        questions: str,
+        user_input: str,
+        best_practice_examples: List[str],
+        attachment_summaries: List[str],
+        max_length: int = 0,
+    ) -> str:
+        """
+        Generate content for a section including attachment summaries.
+
+        Args:
+            title: The section title
+            questions: Questions to guide the content
+            user_input: User-provided input
+            best_practice_examples: List of example texts
+            attachment_summaries: List of AI-generated summaries from attachments
+            max_length: Maximum length constraint (0 for no limit)
+
+        Returns:
+            Generated section content incorporating attachment data
+        """
+        messages = self._build_messages_with_attachments(
+            title,
+            questions,
+            user_input,
+            best_practice_examples,
+            attachment_summaries,
+            max_length,
+        )
+
+        try:
+            response = self.llm.invoke(messages)
+            return response.content.strip()
+        except Exception as e:
+            raise RuntimeError(f"Failed to generate content: {str(e)}")
+
     def _build_messages(
         self,
         title: str,
@@ -143,6 +181,39 @@ class LLMService:
         system_prompt = self._create_system_prompt(max_length)
         human_prompt = self._create_human_prompt(
             title, questions, user_input, best_practice_examples
+        )
+
+        return [
+            SystemMessage(content=system_prompt),
+            HumanMessage(content=human_prompt),
+        ]
+
+    def _build_messages_with_attachments(
+        self,
+        title: str,
+        questions: str,
+        user_input: str,
+        best_practice_examples: List[str],
+        attachment_summaries: List[str],
+        max_length: int,
+    ) -> List[BaseMessage]:
+        """
+        Build the message chain for the LLM, including attachment summaries.
+
+        Args:
+            title: The section title
+            questions: Questions to guide the content
+            user_input: User-provided input
+            best_practice_examples: List of example texts
+            attachment_summaries: List of AI-generated summaries from attachments
+            max_length: Maximum length constraint
+
+        Returns:
+            List of messages for the LLM
+        """
+        system_prompt = self._create_system_prompt(max_length)
+        human_prompt = self._create_human_prompt_with_attachments(
+            title, questions, user_input, best_practice_examples, attachment_summaries
         )
 
         return [
@@ -212,5 +283,55 @@ Benutzerinput:
 
 Best-Practice-Beispiele:
 {examples_text}
+
+Bitte erstelle basierend auf diesen Informationen einen professionellen Abschnitt für einen Projektantrag. Wiederhole den Abschnittstitel nicht im Text, sondern beginne direkt mit dem Inhalt."""
+
+    def _create_human_prompt_with_attachments(
+        self,
+        title: str,
+        questions: str,
+        user_input: str,
+        best_practice_examples: List[str],
+        attachment_summaries: List[str],
+    ) -> str:
+        """
+        Create the human prompt for the LLM, including attachment summaries.
+
+        Args:
+            title: The section title
+            questions: Questions to guide the content
+            user_input: User-provided input
+            best_practice_examples: List of example texts
+            attachment_summaries: List of AI-generated summaries from attachments
+
+        Returns:
+            Human prompt string
+        """
+        examples_text = "\n\n".join(
+            [
+                f"Beispiel {i+1}:\n{example}"
+                for i, example in enumerate(best_practice_examples)
+            ]
+        )
+        attachments_text = "\n\n".join(
+            [
+                f"Anhangszusammenfassung {i+1}:\n{summary}"
+                for i, summary in enumerate(attachment_summaries)
+            ]
+        )
+
+        return f"""Abschnittstitel: {title}
+
+Leitfragen:
+{questions}
+
+Benutzerinput:
+{user_input}
+
+Best-Practice-Beispiele:
+{examples_text}
+
+Zusammenfassungen der Anhänge:
+{attachments_text}
 
 Bitte erstelle basierend auf diesen Informationen einen professionellen Abschnitt für einen Projektantrag. Wiederhole den Abschnittstitel nicht im Text, sondern beginne direkt mit dem Inhalt."""

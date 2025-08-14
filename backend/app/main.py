@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
 from .routers import proposal_router, template_router
+from .routers.attachments import router as attachments_router
 
 # Load environment variables
 load_dotenv()
@@ -60,6 +61,7 @@ def create_app() -> FastAPI:
     # Include routers
     app.include_router(proposal_router)
     app.include_router(template_router)
+    app.include_router(attachments_router)
 
     # Health check endpoints
     @app.get("/")
