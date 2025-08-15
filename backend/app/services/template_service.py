@@ -27,9 +27,14 @@ class TemplateService:
         return [
             TemplateListItem(
                 id="digi4wirtschaft",
-                name="Digi4Wirtschaft Förderantrag",
+                name="Digi4Wirtschaft WKNOE",
                 description="Template for digital economy funding applications",
-            )
+            ),
+            TemplateListItem(
+                id="digitalisierung_WA",
+                name="Digitalisierung Wirtschaftsagentur Wien",
+                description="Template for digital economy funding applications",
+            ),
         ]
 
     async def get_template(self, template_id: str) -> ProposalTemplate:
@@ -46,8 +51,6 @@ class TemplateService:
             FileNotFoundError: If template doesn't exist
             ValueError: If template_id is invalid
         """
-        if template_id != "digi4wirtschaft":
-            raise ValueError(f"Template '{template_id}' not found")
 
         template_path = os.path.join(self.data_dir, f"{template_id}.json")
 
