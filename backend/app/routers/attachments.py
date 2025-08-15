@@ -20,7 +20,7 @@ class URLExtractionRequest(BaseModel):
     url: HttpUrl
 
 
-router = APIRouter(prefix="/api", tags=["attachments"])
+router = APIRouter(prefix="/api/v1", tags=["attachments"])
 
 # Initialize services
 file_service = FileService()

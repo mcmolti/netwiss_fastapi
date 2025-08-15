@@ -294,8 +294,8 @@ export async function uploadFile(file: File): Promise<FileUploadResponse> {
   const formData = new FormData()
   formData.append('file', file)
   
-  // Use fetch directly for file uploads since we need FormData
-  const response = await fetch(`${API_BASE_URL.replace('/v1', '')}/files/upload`, {
+  // Use consistent API path with /api/v1 prefix
+  const response = await fetch(`${API_BASE_URL}/files/upload`, {
     method: 'POST',
     body: formData,
     credentials: 'include',
