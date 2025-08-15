@@ -6,7 +6,6 @@ import os
 import asyncio
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
 from .routers import proposal_router, template_router
@@ -14,6 +13,7 @@ from .routers.attachments import router as attachments_router
 from .routers.maintenance import router as maintenance_router
 from .services.maintenance_service import MaintenanceService
 from .config.logging import setup_logging, get_logger
+from .config.cors import add_cors_middleware
 
 # Load environment variables
 load_dotenv()
@@ -76,14 +76,8 @@ def create_app() -> FastAPI:
         lifespan=lifespan,
     )
 
-    # Add CORS middleware for frontend integration
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=["*"],  # Configure appropriately for production
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
+    # Add CORS middleware with environment-specific configuration
+    add_cors_middleware(app)
 
     # Include routers
     app.include_router(proposal_router)
