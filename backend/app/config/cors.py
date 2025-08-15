@@ -4,11 +4,14 @@ Provides environment-specific CORS settings with security best practices.
 """
 
 import os
-from typing import List, Union
-from fastapi.middleware.cors import CORSMiddleware
-from .logging import get_logger
+from typing import List, Dict, Any, TYPE_CHECKING
+import logging
 
-logger = get_logger("cors")
+if TYPE_CHECKING:
+    from fastapi import FastAPI
+
+# Use standard logging instead of potentially circular import
+logger = logging.getLogger("cors")
 
 
 class CORSConfig:
@@ -130,7 +133,7 @@ class CORSConfig:
 
         return True
 
-    def get_cors_settings(self) -> dict:
+    def get_cors_settings(self) -> Dict[str, Any]:
         """
         Get complete CORS middleware settings.
 
@@ -194,7 +197,7 @@ class CORSConfig:
         return headers
 
 
-def get_cors_middleware_config() -> dict:
+def get_cors_middleware_config() -> Dict[str, Any]:
     """
     Get CORS middleware configuration for the FastAPI application.
 
@@ -205,7 +208,7 @@ def get_cors_middleware_config() -> dict:
     return cors_config.get_cors_settings()
 
 
-def add_cors_middleware(app, **kwargs) -> None:
+def add_cors_middleware(app: "FastAPI", **kwargs: Any) -> None:
     """
     Add CORS middleware to the FastAPI application.
 
@@ -213,6 +216,8 @@ def add_cors_middleware(app, **kwargs) -> None:
         app: FastAPI application instance
         **kwargs: Additional CORS middleware options (overrides defaults)
     """
+    from fastapi.middleware.cors import CORSMiddleware
+    
     config = get_cors_middleware_config()
     config.update(kwargs)  # Allow overrides
 
