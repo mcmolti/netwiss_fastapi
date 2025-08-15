@@ -213,3 +213,29 @@
 2025-08-15 09:26:21 - app.main - INFO - lifespan:40 - Starting proposal generation backend...
 2025-08-15 09:26:21 - app.main - INFO - lifespan:47 - Starting background file cleanup task...
 2025-08-15 09:26:21 - app.services.maintenance - INFO - start_periodic_cleanup:170 - Starting periodic cleanup task (interval: 1h, retention: 24h)
+2025-08-15 10:21:51 - app.services.proposal_service - INFO - process_request:59 - Processing proposal request with 6 sections using model: gpt-4o-mini
+2025-08-15 10:21:51 - app.services.llm_service - INFO - __init__:59 - Initialized LLM service with model: gpt-4o-mini, provider: openai
+2025-08-15 10:21:51 - app.services.llm_service - INFO - generate_section_content:136 - Generating content for section: Bisherige Unternehmensentwicklung
+2025-08-15 10:21:52 - app.services.llm_service - INFO - llm:84 - OpenAI client initialized successfully for model: gpt-4o-mini
+2025-08-15 10:21:57 - app.services.llm_service - INFO - generate_section_content:151 - Successfully generated content for section: Bisherige Unternehmensentwicklung, Length: 2234 characters
+2025-08-15 10:21:57 - app.services.proposal_service - INFO - _process_section:158 - Successfully generated content for section unternehmensentwicklung, length: 2234 characters
+2025-08-15 10:21:57 - app.services.llm_service - INFO - generate_section_content:136 - Generating content for section: Ausblick und Unternehmensstrategie
+2025-08-15 10:22:02 - app.services.llm_service - INFO - generate_section_content:151 - Successfully generated content for section: Ausblick und Unternehmensstrategie, Length: 2070 characters
+2025-08-15 10:22:02 - app.services.proposal_service - INFO - _process_section:158 - Successfully generated content for section ausblick, length: 2070 characters
+2025-08-15 10:22:02 - app.services.llm_service - INFO - generate_section_content:136 - Generating content for section: Ist-Zustand
+2025-08-15 10:22:11 - app.services.llm_service - INFO - generate_section_content:151 - Successfully generated content for section: Ist-Zustand, Length: 3199 characters
+2025-08-15 10:22:11 - app.services.proposal_service - INFO - _process_section:158 - Successfully generated content for section ist_zustand, length: 3199 characters
+2025-08-15 10:22:11 - app.services.llm_service - INFO - generate_section_content:136 - Generating content for section: Soll-Zustand & Projektbeschreibung
+2025-08-15 10:22:20 - app.services.llm_service - INFO - generate_section_content:151 - Successfully generated content for section: Soll-Zustand & Projektbeschreibung, Length: 3714 characters
+2025-08-15 10:22:20 - app.services.proposal_service - INFO - _process_section:158 - Successfully generated content for section soll_zustand, length: 3714 characters
+2025-08-15 10:22:20 - app.services.llm_service - INFO - generate_section_content:136 - Generating content for section: Herausforderung bei der Projektumsetzung
+2025-08-15 10:22:30 - app.services.llm_service - INFO - generate_section_content:151 - Successfully generated content for section: Herausforderung bei der Projektumsetzung, Length: 3705 characters
+2025-08-15 10:22:30 - app.services.proposal_service - INFO - _process_section:158 - Successfully generated content for section herausforderung, length: 3705 characters
+2025-08-15 10:22:30 - app.services.llm_service - INFO - generate_section_content:136 - Generating content for section: Verbesserung/Additionalität
+2025-08-15 10:22:40 - app.services.llm_service - INFO - generate_section_content:151 - Successfully generated content for section: Verbesserung/Additionalität, Length: 3660 characters
+2025-08-15 10:22:40 - app.services.proposal_service - INFO - _process_section:158 - Successfully generated content for section verbesserung, length: 3660 characters
+2025-08-15 10:22:40 - app.services.proposal_service - INFO - process_request:86 - Completed processing proposal request with status: success
+2025-08-15 10:26:21 - app.services.maintenance - INFO - cleanup_old_files:48 - Starting file cleanup process
+2025-08-15 10:26:21 - app.services.maintenance - INFO - cleanup_old_files:104 - File cleanup completed: 0 files deleted, 0.0 KB freed, 0 errors
+2025-08-15 11:37:21 - app.services.maintenance - INFO - cleanup_old_files:48 - Starting file cleanup process
+2025-08-15 11:37:21 - app.services.maintenance - INFO - cleanup_old_files:104 - File cleanup completed: 0 files deleted, 0.0 KB freed, 0 errors
